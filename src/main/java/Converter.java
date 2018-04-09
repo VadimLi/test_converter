@@ -1,11 +1,21 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-public class Convert {
+public class Converter implements Runnable {
 
-    public void transformVideoToAudio(String titleVideo) {
+    private String titleVideo;
+
+    private SyncQueue syncQueue;
+
+    public Converter(final String titleVideo,
+                     final SyncQueue syncQueue) {
+        this.titleVideo = titleVideo;
+        this.syncQueue = syncQueue;
+    }
+
+    public void run() {
         try {
-            RandomString randomString = new RandomString();
+            final RandomString randomString = new RandomString();
             String line;
             final String mp4File = "/youtube/" + titleVideo;
             final String mp3File = "/youtube/" + randomString.nextString() + ".mp3";
@@ -18,6 +28,8 @@ public class Convert {
                     new InputStreamReader(p.getErrorStream()));
             System.out.println(titleVideo);
             while ((line = in.readLine()) != null) {
+                Thread.sleep(2000);
+                syncQueue.convertVideo();
                 System.out.println(line);
             }
             p.waitFor();
